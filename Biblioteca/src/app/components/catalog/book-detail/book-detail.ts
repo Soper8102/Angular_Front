@@ -20,6 +20,7 @@ export class BookDetail {
   id: number | null = null;
   loading = false;
   error: string | null = null;
+  success: string | null = null;
   stockResult: StockCheckResponse | null = null;
   stockCantidad = new FormControl<number>(1, { nonNullable: true, validators: [Validators.required, Validators.min(1)] });
 
@@ -34,6 +35,7 @@ export class BookDetail {
   });
 
   constructor() {
+    this.success = this.consumeFlashSuccess();
     const rawId = this.route.snapshot.paramMap.get('id');
     this.id = rawId ? Number(rawId) : null;
     if (this.id && !Number.isNaN(this.id)) {
@@ -75,9 +77,14 @@ export class BookDetail {
   }
 
   save(): void {
+    if (this.loading) {
+      return;
+    }
     this.error = null;
+    this.success = null;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.error = 'Faltan campos por llenar';
       return;
     }
     if (!this.isCreate() && !this.isAdmin()) {
@@ -105,6 +112,7 @@ export class BookDetail {
       this.catalog.create(payload).subscribe({
         next: async (created) => {
           this.loading = false;
+          this.setFlashSuccess('Producto creado correctamente');
           if (created?.id) {
             await this.router.navigateByUrl(`/catalog/${created.id}`);
           } else {
@@ -122,6 +130,7 @@ export class BookDetail {
     this.catalog.update(this.id!, payload).subscribe({
       next: () => {
         this.loading = false;
+        this.success = 'Producto actualizado correctamente';
       },
       error: (e) => {
         this.loading = false;
@@ -135,10 +144,14 @@ export class BookDetail {
       this.error = 'No autorizado';
       return;
     }
+    if (!confirm('¿Eliminar este producto?')) {
+      return;
+    }
     this.loading = true;
     this.catalog.remove(this.id).subscribe({
       next: async () => {
         this.loading = false;
+        this.setFlashSuccess('Producto eliminado correctamente');
         await this.router.navigateByUrl('/catalog');
       },
       error: () => {
@@ -165,5 +178,26 @@ export class BookDetail {
         this.error = 'No se pudo consultar el stock';
       },
     });
+  }
+
+  private setFlashSuccess(message: string): void {
+    try {
+      sessionStorage.setItem('flash_success', message);
+    } catch {
+      return;
+    }
+  }
+
+  private consumeFlashSuccess(): string | null {
+    try {
+      const key = 'flash_success';
+      const msg = sessionStorage.getItem(key);
+      if (msg) {
+        sessionStorage.removeItem(key);
+      }
+      return msg;
+    } catch {
+      return null;
+    }
   }
 }

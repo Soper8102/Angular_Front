@@ -19,6 +19,10 @@
     </div>
   </header>
 
+  @if (success) {
+    <div class="success">{{ success }}</div>
+  }
+
   @if (error) {
     <div class="error">{{ error }}</div>
   }
@@ -29,31 +33,57 @@
         <span>Título</span>
         <input formControlName="titulo" />
       </label>
+      @if (form.controls.titulo.touched && form.controls.titulo.invalid) {
+        <div class="error">El título es requerido</div>
+      }
 
       <label class="field">
         <span>Autor</span>
         <input formControlName="autor" />
       </label>
+      @if (form.controls.autor.touched && form.controls.autor.invalid) {
+        <div class="error">El autor es requerido</div>
+      }
 
       <label class="field">
         <span>ISBN</span>
         <input formControlName="isbn" />
       </label>
+      @if (form.controls.isbn.touched && form.controls.isbn.invalid) {
+        <div class="error">El ISBN es requerido</div>
+      }
 
       <label class="field">
         <span>Categoría</span>
         <input formControlName="categoria" />
       </label>
+      @if (form.controls.categoria.touched && form.controls.categoria.invalid) {
+        <div class="error">La categoría es requerida</div>
+      }
 
       <label class="field">
         <span>Precio</span>
         <input type="number" formControlName="precio" step="0.01" />
       </label>
+      @if (form.controls.precio.touched && form.controls.precio.invalid) {
+        @if (form.controls.precio.errors?.['required']) {
+          <div class="error">El precio es requerido</div>
+        } @else {
+          <div class="error">El precio debe ser mayor o igual a 0</div>
+        }
+      }
 
       <label class="field">
         <span>Stock</span>
         <input type="number" formControlName="stock" />
       </label>
+      @if (form.controls.stock.touched && form.controls.stock.invalid) {
+        @if (form.controls.stock.errors?.['required']) {
+          <div class="error">El stock es requerido</div>
+        } @else {
+          <div class="error">El stock debe ser mayor o igual a 0</div>
+        }
+      }
     </div>
 
     <label class="field">

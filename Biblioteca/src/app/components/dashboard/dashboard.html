@@ -1,0 +1,33 @@
+<section class="page">
+  <div class="shell">
+    <header class="header">
+      <h1>Dashboard</h1>
+      <p>Accesos rápidos</p>
+    </header>
+
+    <div class="grid">
+      <a class="card" routerLink="/catalog">
+        <div class="title">Catálogo</div>
+        <div class="desc">Ver productos disponibles</div>
+      </a>
+
+      <a class="card" routerLink="/orders/new">
+        <div class="title">Nuevo pedido</div>
+        <div class="desc">Crear un pedido</div>
+      </a>
+
+      <a class="card" routerLink="/orders">
+        <div class="title">Mis pedidos</div>
+        <div class="desc">Ver historial</div>
+      </a>
+
+      @if (isAdmin()) {
+        <a class="card admin" routerLink="/catalog/new">
+          <div class="title">Nuevo producto</div>
+          <div class="desc">Agregar al catálogo</div>
+        </a>
+      }
+    </div>
+  </div>
+</section>
+

@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormControl, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../../services/auth';
 
@@ -14,14 +14,20 @@ export class Register {
   private auth = inject(Auth);
   private router = inject(Router);
 
-  readonly form = new FormGroup({
-    email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
-    password: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(8)] }),
-    role: new FormControl<'ADMIN' | 'CUSTOMER'>('CUSTOMER', { nonNullable: true, validators: [Validators.required] }),
-  });
+  readonly form = new FormGroup(
+    {
+      email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
+      password: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(8)] }),
+      confirmPassword: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+      role: new FormControl<'ADMIN' | 'CUSTOMER'>('CUSTOMER', { nonNullable: true, validators: [Validators.required] }),
+    },
+    { validators: [passwordsMatchValidator] },
+  );
 
   error: string | null = null;
   success: string | null = null;
+  successModalOpen = false;
+  redirecting = false;
   loading = false;
 
   submit(): void {
@@ -38,29 +44,68 @@ export class Register {
 
     const { email, password, role } = this.form.getRawValue();
     this.loading = true;
-    this.auth.register(email, password, role).subscribe({
-      next: async (msg) => {
-        this.loading = false;
-        this.success = typeof msg === 'string' ? msg : 'Usuario registrado';
-        await this.router.navigateByUrl('/login');
-      },
-      error: (e) => {
-        this.loading = false;
-        if (typeof e?.error === 'string') {
-          this.error = e.error;
-          return;
-        }
-        if (typeof e?.error?.message === 'string') {
-          this.error = e.error.message;
-          return;
-        }
-        if (e?.status === 400 && e?.error && typeof e.error === 'object') {
-          const first = Object.values(e.error)[0];
-          this.error = typeof first === 'string' ? first : 'No se pudo registrar';
-          return;
-        }
-        this.error = 'No se pudo registrar';
-      },
-    });
+    try {
+      this.auth.register(email, password, role).subscribe({
+        next: async (msg) => {
+          this.loading = false;
+          this.success = typeof msg === 'string' ? msg : 'Usuario registrado';
+          this.setFlashSuccess(this.success);
+        this.successModalOpen = true;
+        this.redirecting = true;
+        setTimeout(() => void this.goToLogin(), 1500);
+        },
+        error: (e) => {
+          this.loading = false;
+          if (typeof e?.error === 'string') {
+            this.error = e.error;
+            return;
+          }
+          if (typeof e?.error?.message === 'string') {
+            this.error = e.error.message;
+            return;
+          }
+          if (e?.status === 400 && e?.error && typeof e.error === 'object') {
+            const first = Object.values(e.error)[0];
+            this.error = typeof first === 'string' ? first : 'No se pudo registrar';
+            return;
+          }
+          this.error = 'No se pudo registrar';
+        },
+      });
+    } catch {
+      this.loading = false;
+      this.error = 'No se pudo registrar';
+    }
   }
+
+  async goToLogin(): Promise<void> {
+    this.successModalOpen = false;
+    this.redirecting = false;
+    await this.router.navigateByUrl('/login');
+  }
+
+  private setFlashSuccess(message: string): void {
+    try {
+      sessionStorage.setItem('flash_success', message);
+    } catch {
+      return;
+    }
+  }
+}
+
+function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
+  const group = control as FormGroup<{
+    password: FormControl<string>;
+    confirmPassword: FormControl<string>;
+  }>;
+  const password = group.controls.password?.value;
+  const confirmPassword = group.controls.confirmPassword?.value;
+
+  if (!password || !confirmPassword) {
+    return null;
+  }
+  if (password !== confirmPassword) {
+    return { passwordMismatch: true };
+  }
+  return null;
 }

@@ -20,7 +20,12 @@ export class Login {
   });
 
   error: string | null = null;
+  success: string | null = null;
   loading = false;
+
+  constructor() {
+    this.success = this.consumeFlashSuccess();
+  }
 
   submit(): void {
     if (this.loading) {
@@ -35,15 +40,37 @@ export class Login {
 
     const { email, password } = this.form.getRawValue();
     this.loading = true;
-    this.auth.login(email, password).subscribe({
-      next: async () => {
-        this.loading = false;
-        await this.router.navigateByUrl('/catalog');
-      },
-      error: (e) => {
-        this.loading = false;
-        this.error = typeof e?.error?.message === 'string' ? e.error.message : 'No se pudo iniciar sesión';
-      },
-    });
+    try {
+      this.auth.login(email, password).subscribe({
+        next: async () => {
+          this.loading = false;
+          await this.router.navigateByUrl('/dashboard');
+        },
+        error: (e) => {
+          this.loading = false;
+          if (e?.status === 401) {
+            this.error = 'Usuario o contraseña incorrectas';
+            return;
+          }
+          this.error = typeof e?.error?.message === 'string' ? e.error.message : 'No se pudo iniciar sesión';
+        },
+      });
+    } catch {
+      this.loading = false;
+      this.error = 'No se pudo iniciar sesión';
+    }
+  }
+
+  private consumeFlashSuccess(): string | null {
+    try {
+      const key = 'flash_success';
+      const msg = sessionStorage.getItem(key);
+      if (msg) {
+        sessionStorage.removeItem(key);
+      }
+      return msg;
+    } catch {
+      return null;
+    }
   }
 }
