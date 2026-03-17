@@ -21,9 +21,13 @@ export class ApiService {
   }
 
   private createCorrelationId(): string {
-    const cryptoAny = crypto as unknown as { randomUUID?: () => string } | undefined;
-    if (cryptoAny?.randomUUID) {
-      return cryptoAny.randomUUID();
+    try {
+      const cryptoAny = (globalThis as unknown as { crypto?: { randomUUID?: () => string } }).crypto;
+      if (cryptoAny?.randomUUID) {
+        return cryptoAny.randomUUID();
+      }
+    } catch {
+      // ignore
     }
 
     const part = () => Math.random().toString(16).slice(2).padEnd(8, '0').slice(0, 8);
@@ -85,6 +89,10 @@ export class ApiService {
    */
   post<T>(endpoint: string, body: any, headers?: HttpHeaders | { [header: string]: string | string[] }): Observable<T> {
     return this.http.post<T>(`${this.apiUrl}/${endpoint}`, body, { headers: this.buildHeaders(headers) });
+  }
+
+  postText(endpoint: string, body: any, headers?: HttpHeaders | { [header: string]: string | string[] }): Observable<string> {
+    return this.http.post(`${this.apiUrl}/${endpoint}`, body, { headers: this.buildHeaders(headers), responseType: 'text' });
   }
 
   /**

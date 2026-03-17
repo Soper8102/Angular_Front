@@ -9,7 +9,7 @@ export class Auth {
   private api = inject(ApiService);
 
   register(email: string, password: string, role: 'ADMIN' | 'CUSTOMER'): Observable<string> {
-    return this.api.post<string>('auth/register', { email, password, role });
+    return this.api.postText('auth/register', { email, password, role });
   }
 
   login(email: string, password: string): Observable<string> {

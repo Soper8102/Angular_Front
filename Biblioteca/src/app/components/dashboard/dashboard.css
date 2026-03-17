@@ -1,0 +1,63 @@
+.page {
+  display: grid;
+  place-items: start center;
+  padding: 24px 16px;
+}
+
+.shell {
+  width: min(980px, 100%);
+  display: grid;
+  gap: 16px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.header p {
+  margin: 6px 0 0;
+  color: #6b7280;
+}
+
+.grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  text-decoration: none;
+  color: #111827;
+}
+
+.card:hover {
+  border-color: #d1d5db;
+}
+
+.card.admin {
+  border-color: #e9d5ff;
+  background: #faf5ff;
+}
+
+.title {
+  font-weight: 800;
+}
+
+.desc {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+

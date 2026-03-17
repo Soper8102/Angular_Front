@@ -17,8 +17,10 @@ export class BookList {
   products: CatalogProduct[] = [];
   loading = false;
   error: string | null = null;
+  success: string | null = null;
 
   constructor() {
+    this.success = this.consumeFlashSuccess();
     this.load();
   }
 
@@ -45,11 +47,30 @@ export class BookList {
     if (!id) {
       return;
     }
+    if (!confirm('¿Eliminar este producto?')) {
+      return;
+    }
     this.catalog.remove(id).subscribe({
-      next: () => this.load(),
+      next: () => {
+        this.success = 'Producto eliminado correctamente';
+        this.load();
+      },
       error: () => {
         this.error = 'No se pudo eliminar el producto';
       },
     });
+  }
+
+  private consumeFlashSuccess(): string | null {
+    try {
+      const key = 'flash_success';
+      const msg = sessionStorage.getItem(key);
+      if (msg) {
+        sessionStorage.removeItem(key);
+      }
+      return msg;
+    } catch {
+      return null;
+    }
   }
 }
