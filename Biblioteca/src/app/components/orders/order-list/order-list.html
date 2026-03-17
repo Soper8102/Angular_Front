@@ -1,1 +1,29 @@
-<p>order-list works!</p>
+<section class="page">
+  <header class="header">
+    <h1>Pedidos</h1>
+    <div class="actions">
+      <a class="btn" routerLink="/orders/new">Nuevo pedido</a>
+      <button type="button" (click)="refresh()">Refrescar</button>
+    </div>
+  </header>
+
+  <p class="note">
+    En el backend actual solo existe el endpoint de crear pedido (POST /orders/pedidos). Aquí se muestra el último
+    pedido creado desde este navegador.
+  </p>
+
+  @if (lastOrder) {
+    <div class="card">
+      <div><strong>ID:</strong> {{ lastOrder.id }}</div>
+      <div><strong>Producto:</strong> {{ lastOrder.productId }}</div>
+      <div><strong>Cantidad:</strong> {{ lastOrder.cantidad }}</div>
+      <div><strong>Usuario:</strong> {{ lastOrder.usuarioId }}</div>
+      <div><strong>Estado:</strong> {{ lastOrder.estado }}</div>
+      <div><strong>Fecha:</strong> {{ lastOrder.fechaCreacion }}</div>
+
+      <button type="button" class="danger" (click)="clear()">Limpiar</button>
+    </div>
+  } @else {
+    <p>No hay pedidos para mostrar.</p>
+  }
+</section>

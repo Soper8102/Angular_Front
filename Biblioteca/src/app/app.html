@@ -341,4 +341,30 @@
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
 
-<router-outlet />
+<header class="topbar">
+  <a class="brand" routerLink="/catalog">{{ title() }}</a>
+
+  <nav class="nav">
+    <a routerLink="/catalog" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Catálogo</a>
+    @if (isAuthenticated()) {
+      <a routerLink="/orders/new" routerLinkActive="active">Nuevo pedido</a>
+      <a routerLink="/orders" routerLinkActive="active">Pedidos</a>
+    }
+    @if (isAuthenticated() && role() === 'ADMIN') {
+      <a routerLink="/catalog/new" routerLinkActive="active">Nuevo producto</a>
+    }
+  </nav>
+
+  <div class="auth">
+    @if (!isAuthenticated()) {
+      <a routerLink="/login" routerLinkActive="active">Login</a>
+      <a routerLink="/register" routerLinkActive="active">Registro</a>
+    } @else {
+      <button type="button" (click)="logout()">Salir</button>
+    }
+  </div>
+</header>
+
+<main class="container">
+  <router-outlet />
+</main>

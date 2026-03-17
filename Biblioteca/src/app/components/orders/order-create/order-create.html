@@ -1,1 +1,31 @@
-<p>order-create works!</p>
+<section class="page">
+  <header class="header">
+    <div>
+      <h1>Nuevo pedido</h1>
+      <a routerLink="/catalog">Ir al catálogo</a>
+    </div>
+  </header>
+
+  @if (error) {
+    <div class="error">{{ error }}</div>
+  }
+
+  <form class="card" [formGroup]="form" (ngSubmit)="submit()">
+    <label class="field">
+      <span>Producto</span>
+      <select formControlName="productId">
+        <option [ngValue]="null">Selecciona...</option>
+        @for (p of products; track p.id) {
+          <option [ngValue]="p.id">{{ p.titulo }} (stock: {{ p.stock }})</option>
+        }
+      </select>
+    </label>
+
+    <label class="field">
+      <span>Cantidad</span>
+      <input type="number" formControlName="cantidad" min="1" />
+    </label>
+
+    <button type="submit" [disabled]="loading">Crear pedido</button>
+  </form>
+</section>
