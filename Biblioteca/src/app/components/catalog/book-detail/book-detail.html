@@ -1,1 +1,91 @@
-<p>book-detail works!</p>
+<section class="page">
+  <header class="header">
+    <div>
+      @if (isCreate()) {
+        <h1>Nuevo producto</h1>
+      } @else {
+        <h1>Producto #{{ id }}</h1>
+      }
+      <a routerLink="/catalog">Volver</a>
+    </div>
+
+    <div class="actions">
+      @if (isAdmin()) {
+        <button type="button" (click)="save()" [disabled]="loading">Guardar</button>
+        @if (!isCreate()) {
+          <button type="button" class="danger" (click)="delete()" [disabled]="loading">Eliminar</button>
+        }
+      }
+    </div>
+  </header>
+
+  @if (error) {
+    <div class="error">{{ error }}</div>
+  }
+
+  <form class="card" [formGroup]="form">
+    <div class="grid">
+      <label class="field">
+        <span>Título</span>
+        <input formControlName="titulo" />
+      </label>
+
+      <label class="field">
+        <span>Autor</span>
+        <input formControlName="autor" />
+      </label>
+
+      <label class="field">
+        <span>ISBN</span>
+        <input formControlName="isbn" />
+      </label>
+
+      <label class="field">
+        <span>Categoría</span>
+        <input formControlName="categoria" />
+      </label>
+
+      <label class="field">
+        <span>Precio</span>
+        <input type="number" formControlName="precio" step="0.01" />
+      </label>
+
+      <label class="field">
+        <span>Stock</span>
+        <input type="number" formControlName="stock" />
+      </label>
+    </div>
+
+    <label class="field">
+      <span>Descripción</span>
+      <textarea rows="4" formControlName="descripcion"></textarea>
+    </label>
+
+    @if (isAdmin()) {
+      <div class="inline-actions">
+        <button type="button" (click)="save()" [disabled]="loading">Guardar</button>
+      </div>
+    }
+  </form>
+
+  @if (!isCreate()) {
+    <section class="card">
+      <h2>Check stock</h2>
+      <div class="stock">
+        <label class="field">
+          <span>Cantidad</span>
+          <input type="number" [formControl]="stockCantidad" />
+        </label>
+        <button type="button" (click)="checkStock()">Consultar</button>
+      </div>
+
+      @if (stockResult) {
+        <div class="result" [class.ok]="stockResult.available" [class.bad]="!stockResult.available">
+          <div>Disponible: {{ stockResult.available }}</div>
+          <div>Solicitado: {{ stockResult.requestedQuantity }}</div>
+          <div>Stock: {{ stockResult.availableStock }}</div>
+        </div>
+      }
+    </section>
+  }
+</section>
