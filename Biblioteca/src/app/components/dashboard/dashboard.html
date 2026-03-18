@@ -1,33 +1,36 @@
 <section class="page">
   <div class="shell">
     <header class="header">
-      <h1>Dashboard</h1>
-      <p>Accesos rápidos</p>
+      <h1>Panel de Control</h1>
+      <p>Bienvenido de nuevo, ¿qué deseas gestionar hoy?</p>
     </header>
 
     <div class="grid">
       <a class="card" routerLink="/catalog">
+        <div class="icon-box">📚</div>
         <div class="title">Catálogo</div>
-        <div class="desc">Ver productos disponibles</div>
+        <div class="desc">Explora nuestra colección de libros disponibles.</div>
       </a>
 
       <a class="card" routerLink="/orders/new">
+        <div class="icon-box">✍️</div>
         <div class="title">Nuevo pedido</div>
-        <div class="desc">Crear un pedido</div>
+        <div class="desc">Realiza una nueva solicitud de libros fácilmente.</div>
       </a>
 
       <a class="card" routerLink="/orders">
+        <div class="icon-box">📦</div>
         <div class="title">Mis pedidos</div>
-        <div class="desc">Ver historial</div>
+        <div class="desc">Revisa el estado y el historial de tus órdenes.</div>
       </a>
 
       @if (isAdmin()) {
         <a class="card admin" routerLink="/catalog/new">
+          <div class="icon-box">🛡️</div>
           <div class="title">Nuevo producto</div>
-          <div class="desc">Agregar al catálogo</div>
+          <div class="desc">Zona Administrativa: Añadir nuevos títulos.</div>
         </a>
       }
     </div>
   </div>
 </section>
-

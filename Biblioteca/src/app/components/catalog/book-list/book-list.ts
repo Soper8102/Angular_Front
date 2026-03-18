@@ -1,18 +1,22 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Catalog, CatalogProduct } from '../../../services/catalog';
 import { Auth } from '../../../services/auth';
+import { error } from 'node:console';
+
 
 @Component({
   selector: 'app-book-list',
+  standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './book-list.html',
   styleUrl: './book-list.css',
 })
-export class BookList {
+export class BookList implements OnInit {
   private catalog = inject(Catalog);
   private auth = inject(Auth);
+  private router = inject(Router);
 
   products: CatalogProduct[] = [];
   loading = false;
@@ -21,6 +25,9 @@ export class BookList {
 
   constructor() {
     this.success = this.consumeFlashSuccess();
+  }
+
+  ngOnInit(): void {
     this.load();
   }
 
@@ -36,13 +43,17 @@ export class BookList {
         this.loading = false;
         this.products = items ?? [];
       },
-      error: () => {
+      error: (err) => {
         this.loading = false;
-        this.error = 'No se pudo cargar el catálogo';
+        if (err.status === 401 || err === 401) {
+        localStorage.removeItem('auth_token'); 
+        this.router.navigate(['/login']); } else {
+          this.error = 'Error al conectar con el servidor';
+        }
       },
     });
   }
-
+  
   delete(id: number | undefined): void {
     if (!id) {
       return;

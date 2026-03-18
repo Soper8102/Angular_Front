@@ -1,50 +1,68 @@
 <section class="page">
-  <header class="header">
-    <h1>Catálogo</h1>
-    <div class="actions">
-      <button type="button" (click)="load()" [disabled]="loading">Recargar</button>
-      @if (isAdmin()) {
-        <a class="btn" routerLink="/catalog/new">Nuevo producto</a>
-      }
-    </div>
-  </header>
+  <div class="shell gallery-shell">
+    <div class="panel list-panel">
+      
+      <header class="header">
+        <div class="hero-mini">
+          <h1>Catálogo de Libros</h1>
+          <p>Gestiona y explora los títulos disponibles.</p>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn-refresh" (click)="load()" [disabled]="loading">
+            <span class="icon">↻</span> Recargar
+          </button>
+          @if (isAdmin()) {
+            <a class="btn-primary" routerLink="/catalog/new">Nuevo producto</a>
+          }
+        </div>
+      </header>
 
-  @if (success) {
-    <div class="success">{{ success }}</div>
-  }
+      <hr class="divider">
 
-  @if (error) {
-    <div class="error">{{ error }}</div>
-  }
+      @if (success) { <div class="alert success">{{ success }}</div> }
+      @if (error) { <div class="alert error">{{ error }}</div> }
 
-  @if (loading) {
-    <p>Cargando...</p>
-  } @else {
-    @if (products.length === 0) {
-      <p>No hay productos.</p>
-    } @else {
-      <div class="list">
-        @for (p of products; track p.id) {
-          <article class="item">
-            <div class="info">
-              <a class="title" [routerLink]="['/catalog', p.id]">{{ p.titulo }}</a>
-              <div class="meta">
-                <span>{{ p.autor }}</span>
-                <span>ISBN: {{ p.isbn }}</span>
-                <span>Stock: {{ p.stock }}</span>
-                <span>Precio: {{ p.precio }}</span>
-              </div>
+      <div class="content-area">
+        @if (loading) {
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Sincronizando con el servidor...</p>
+          </div>
+        } @else {
+          @if (products.length === 0) {
+            <div class="empty-state">
+              <p>No se encontraron productos en la base de datos.</p>
             </div>
+          } @else {
+            <div class="grid-gallery">
+              @for (p of products; track p.id) {
+                <article class="book-card">
+                  <div class="book-header">
+                    <span class="category-badge">{{ p.categoria || 'Literatura' }}</span>
+                    <h3 class="book-title">{{ p.titulo }}</h3>
+                  </div>
+                  
+                  <div class="book-body">
+                    <p class="author"><span>Por:</span> {{ p.autor }}</p>
+                    <div class="meta-info">
+                      <div class="info-item"><strong>ISBN:</strong> {{ p.isbn }}</div>
+                      <div class="info-item"><strong>Stock:</strong> {{ p.stock }} unidades</div>
+                    </div>
+                    <div class="price-tag">${{ p.precio }}</div>
+                  </div>
 
-            @if (isAdmin()) {
-              <div class="admin">
-                <a class="btn" [routerLink]="['/catalog', p.id]">Editar</a>
-                <button type="button" class="danger" (click)="delete(p.id)">Eliminar</button>
-              </div>
-            }
-          </article>
+                  @if (isAdmin()) {
+                    <div class="admin-footer">
+                      <a class="btn-edit" [routerLink]="['/catalog', p.id]">Editar</a>
+                      <button type="button" class="btn-danger" (click)="delete(p.id)">Eliminar</button>
+                    </div>
+                  }
+                </article>
+              }
+            </div>
+          }
         }
       </div>
-    }
-  }
+    </div>
+  </div>
 </section>

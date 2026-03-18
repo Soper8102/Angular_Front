@@ -28,6 +28,7 @@ export class Login {
   }
 
   submit(): void {
+    localStorage.removeItem('auth_token');
     if (this.loading) {
       return;
     }

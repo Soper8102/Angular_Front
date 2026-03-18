@@ -1,121 +1,92 @@
 <section class="page">
-  <header class="header">
-    <div>
-      @if (isCreate()) {
-        <h1>Nuevo producto</h1>
-      } @else {
-        <h1>Producto #{{ id }}</h1>
-      }
-      <a routerLink="/catalog">Volver</a>
-    </div>
-
-    <div class="actions">
-      @if (isAdmin()) {
-        <button type="button" (click)="save()" [disabled]="loading">Guardar</button>
-        @if (!isCreate()) {
-          <button type="button" class="danger" (click)="delete()" [disabled]="loading">Eliminar</button>
-        }
-      }
-    </div>
-  </header>
-
-  @if (success) {
-    <div class="success">{{ success }}</div>
-  }
-
-  @if (error) {
-    <div class="error">{{ error }}</div>
-  }
-
-  <form class="card" [formGroup]="form">
-    <div class="grid">
-      <label class="field">
-        <span>Título</span>
-        <input formControlName="titulo" />
-      </label>
-      @if (form.controls.titulo.touched && form.controls.titulo.invalid) {
-        <div class="error">El título es requerido</div>
-      }
-
-      <label class="field">
-        <span>Autor</span>
-        <input formControlName="autor" />
-      </label>
-      @if (form.controls.autor.touched && form.controls.autor.invalid) {
-        <div class="error">El autor es requerido</div>
-      }
-
-      <label class="field">
-        <span>ISBN</span>
-        <input formControlName="isbn" />
-      </label>
-      @if (form.controls.isbn.touched && form.controls.isbn.invalid) {
-        <div class="error">El ISBN es requerido</div>
-      }
-
-      <label class="field">
-        <span>Categoría</span>
-        <input formControlName="categoria" />
-      </label>
-      @if (form.controls.categoria.touched && form.controls.categoria.invalid) {
-        <div class="error">La categoría es requerida</div>
-      }
-
-      <label class="field">
-        <span>Precio</span>
-        <input type="number" formControlName="precio" step="0.01" />
-      </label>
-      @if (form.controls.precio.touched && form.controls.precio.invalid) {
-        @if (form.controls.precio.errors?.['required']) {
-          <div class="error">El precio es requerido</div>
+  <div class="detail-shell"> <header class="header">
+      <div>
+        @if (isCreate()) {
+          <h1>Nuevo producto</h1>
         } @else {
-          <div class="error">El precio debe ser mayor o igual a 0</div>
+          <h1>Producto #{{ id }}</h1>
         }
-      }
-
-      <label class="field">
-        <span>Stock</span>
-        <input type="number" formControlName="stock" />
-      </label>
-      @if (form.controls.stock.touched && form.controls.stock.invalid) {
-        @if (form.controls.stock.errors?.['required']) {
-          <div class="error">El stock es requerido</div>
-        } @else {
-          <div class="error">El stock debe ser mayor o igual a 0</div>
-        }
-      }
-    </div>
-
-    <label class="field">
-      <span>Descripción</span>
-      <textarea rows="4" formControlName="descripcion"></textarea>
-    </label>
-
-    @if (isAdmin()) {
-      <div class="inline-actions">
-        <button type="button" (click)="save()" [disabled]="loading">Guardar</button>
+        <a routerLink="/catalog">← Volver al catálogo</a>
       </div>
-    }
-  </form>
 
-  @if (!isCreate()) {
-    <section class="card">
-      <h2>Check stock</h2>
-      <div class="stock">
+      <div class="actions">
+        @if (isAdmin()) {
+          <button type="button" (click)="save()" [disabled]="loading">Guardar</button>
+          @if (!isCreate()) {
+            <button type="button" class="danger" (click)="delete()" [disabled]="loading" style="margin-left: 10px;">Eliminar</button>
+          }
+        }
+      </div>
+    </header>
+
+    @if (success) { <div class="success">{{ success }}</div> }
+    @if (error) { <div class="error">{{ error }}</div> }
+
+    <form [formGroup]="form">
+      <div class="grid">
         <label class="field">
-          <span>Cantidad</span>
-          <input type="number" [formControl]="stockCantidad" />
+          <span>Título</span>
+          <input formControlName="titulo" placeholder="Ej: Clean Code" />
+          @if (form.controls.titulo.touched && form.controls.titulo.invalid) {
+            <div class="error">El título es requerido</div>
+          }
         </label>
-        <button type="button" (click)="checkStock()">Consultar</button>
+
+        <label class="field">
+          <span>Autor</span>
+          <input formControlName="autor" placeholder="Nombre del autor" />
+          @if (form.controls.autor.touched && form.controls.autor.invalid) {
+            <div class="error">El autor es requerido</div>
+          }
+        </label>
+
+        <label class="field">
+          <span>ISBN</span>
+          <input formControlName="isbn" placeholder="978..." />
+        </label>
+
+        <label class="field">
+          <span>Categoría</span>
+          <input formControlName="categoria" placeholder="Ingeniería, Fantasía..." />
+        </label>
+
+        <label class="field">
+          <span>Precio</span>
+          <input type="number" formControlName="precio" step="0.01" />
+        </label>
+
+        <label class="field">
+          <span>Stock</span>
+          <input type="number" formControlName="stock" />
+        </label>
       </div>
 
-      @if (stockResult) {
-        <div class="result" [class.ok]="stockResult.available" [class.bad]="!stockResult.available">
-          <div>Disponible: {{ stockResult.available }}</div>
-          <div>Solicitado: {{ stockResult.requestedQuantity }}</div>
-          <div>Stock: {{ stockResult.availableStock }}</div>
+      <label class="field" style="margin-top: 15px;">
+        <span>Descripción</span>
+        <textarea rows="4" formControlName="descripcion" placeholder="Resumen del libro..."></textarea>
+      </label>
+    </form>
+
+    @if (!isCreate()) {
+      <section class="stock-section">
+        <h2>Verificar disponibilidad</h2>
+        <div style="display: flex; gap: 15px; align-items: flex-end;">
+          <label class="field" style="flex: 1; margin: 0;">
+            <span>Cantidad a consultar</span>
+            <input type="number" [formControl]="stockCantidad" />
+          </label>
+          <button type="button" (click)="checkStock()" style="height: 45px;">Consultar Stock</button>
         </div>
-      }
-    </section>
-  }
+
+        @if (stockResult) {
+          <div class="result" [class.ok]="stockResult.available" [class.bad]="!stockResult.available" 
+               style="margin-top: 15px; padding: 15px; border-radius: 12px; border: 1px solid #eee;">
+            <strong>Resultado:</strong> 
+            {{ stockResult.available ? '✅ Stock disponible' : '❌ No hay suficiente stock' }}
+            <br><small>Disponibles: {{ stockResult.availableStock }} | Solicitados: {{ stockResult.requestedQuantity }}</small>
+          </div>
+        }
+      </section>
+    }
+  </div>
 </section>
