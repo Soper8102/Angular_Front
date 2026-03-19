@@ -6,11 +6,21 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
+
+// Configuración del Proxy para redirigir peticiones /api al backend
+app.use('/api', createProxyMiddleware({
+  target: process.env['BACKEND_URL'] || 'http://localhost:8080',
+  changeOrigin: true,
+  pathRewrite: {
+    '^/api': '', // Quita el /api antes de enviarlo al backend
+  },
+}));
 
 /**
  * Example Express Rest API endpoints can be defined here.

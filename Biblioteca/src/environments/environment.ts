@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiUrl: 'http://localhost:8080' // Cambia esto por la URL real de tu backend
+    apiUrl: '/api' // Cambiado a ruta relativa para que pase por el proxy de Express en Docker
 };
