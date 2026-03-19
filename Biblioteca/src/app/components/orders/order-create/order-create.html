@@ -1,31 +1,46 @@
 <section class="page">
-  <header class="header">
-    <div>
-      <h1>Nuevo pedido</h1>
-      <a routerLink="/catalog">Ir al catálogo</a>
-    </div>
-  </header>
+  <div class="shell-form">
+    <header class="header">
+      <div class="hero-mini">
+        <h1>Nuevo Pedido</h1>
+        <p class="subtitle">Selecciona un producto y la cantidad deseada.</p>
+      </div>
+      <a routerLink="/catalog" class="link-back">← Volver al catálogo</a>
+    </header>
 
-  @if (error) {
-    <div class="error">{{ error }}</div>
-  }
+    @if (error) {
+      <div class="error-banner">{{ error }}</div>
+    }
 
-  <form class="card" [formGroup]="form" (ngSubmit)="submit()">
-    <label class="field">
-      <span>Producto</span>
-      <select formControlName="productId">
-        <option [ngValue]="null">Selecciona...</option>
-        @for (p of products; track p.id) {
-          <option [ngValue]="p.id">{{ p.titulo }} (stock: {{ p.stock }})</option>
-        }
-      </select>
-    </label>
+    <form class="order-card" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-content">
+        <label class="field">
+          <span>Producto</span>
+          <div class="select-wrapper">
+            <select formControlName="productId">
+              <option [ngValue]="null">Haz clic para seleccionar...</option>
+              @for (p of products; track p.id) {
+                <option [ngValue]="p.id">
+                  {{ p.titulo }} — (Disponible: {{ p.stock }})
+                </option>
+              }
+            </select>
+          </div>
+        </label>
 
-    <label class="field">
-      <span>Cantidad</span>
-      <input type="number" formControlName="cantidad" min="1" />
-    </label>
+        <label class="field">
+          <span>Cantidad a pedir</span>
+          <input type="number" formControlName="cantidad" min="1" placeholder="0" />
+        </label>
+      </div>
 
-    <button type="submit" [disabled]="loading">Crear pedido</button>
-  </form>
+      <div class="form-footer">
+        <button type="submit" [disabled]="loading || form.invalid" class="btn-submit">
+          {{ loading ? 'Procesando...' : 'Confirmar Pedido' }}
+        </button>
+      </div>
+    </form>
+    
+    <p class="security-note">🔒 Transacción protegida por el servicio de autenticación.</p>
+  </div>
 </section>
