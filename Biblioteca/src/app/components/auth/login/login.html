@@ -17,11 +17,11 @@
         <h2 class="title">USER LOGIN</h2>
 
         @if (success) {
-          <div class="alert success">{{ success }}</div>
+        <div class="alert success">{{ success }}</div>
         }
 
         @if (error) {
-          <div class="alert error">{{ error }}</div>
+        <div class="alert error">{{ error }}</div>
         }
 
         <form class="form" [formGroup]="form" (ngSubmit)="submit()">
@@ -32,21 +32,22 @@
             </div>
           </label>
           @if (form.controls.email.touched && form.controls.email.invalid) {
-            @if (form.controls.email.errors?.['required']) {
-              <div class="hint error">El correo es requerido</div>
-            } @else {
-              <div class="hint error">El correo no tiene un formato válido</div>
-            }
+          @if (form.controls.email.errors?.['required']) {
+          <div class="hint error">El correo es requerido</div>
+          } @else {
+          <div class="hint error">El correo no tiene un formato válido</div>
+          }
           }
 
           <label class="field">
             <span>Contraseña</span>
             <div class="control">
-              <input type="password" formControlName="password" autocomplete="current-password" placeholder="••••••••" />
+              <input type="password" formControlName="password" autocomplete="current-password"
+                placeholder="••••••••" />
             </div>
           </label>
           @if (form.controls.password.touched && form.controls.password.invalid) {
-            <div class="hint error">La contraseña es requerida</div>
+          <div class="hint error">La contraseña es requerida</div>
           }
 
           <button class="btn" type="submit" (click)="submit()" [disabled]="loading">LOGIN</button>

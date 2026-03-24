@@ -1,40 +1,40 @@
-# ETAPA 1: Construcción (Build)
-FROM node:20-alpine AS build
+# Etapa 1: Construcción (Build)
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
-# Copiar configuración de dependencias
+# Copiar archivos de dependencias
 COPY package*.json ./
 
-# Instalar dependencias
-RUN npm ci
+# Instalar todas las dependencias (incluyendo devDependencies para poder hacer el build)
+RUN npm ci || npm install
 
-# Copiar el código fuente completo
+# Copiar el resto del código fuente
 COPY . .
 
-# Construir la aplicación para producción (genera la carpeta dist)
+# Construir la aplicación Angular
 RUN npm run build
 
-# ETAPA 2: Servidor Node para SSR (Server-Side Rendering)
-FROM node:20-alpine
+# Etapa 2: Producción (Serve SSR)
+FROM node:22-alpine
 
 WORKDIR /app
 
-# Copiamos la carpeta dist y los archivos de empaquetado generados
+# Copiar archivos de dependencias
+COPY package*.json ./
+
+# Instalar solo las dependencias de producción
+RUN npm ci --omit=dev || npm install --production
+
+# Copiar la carpeta 'dist' generada en la etapa de construcción
 COPY --from=build /app/dist ./dist
-COPY --from=build /app/package*.json ./
 
-# Instalamos solo las dependencias de producción (necesitaremos el proxy y otras utilidades en runtime)
-RUN npm ci --omit=dev
+# Variables de entorno
+ENV PORT=4000
+ENV NODE_ENV=production
 
-# Le indicamos al servidor SSR interno de Angular que escuche en el puerto 4200
-ENV PORT=4200
+# Exponer el puerto
+EXPOSE 4000
 
-# Configuramos la ruta del backend para que el contenedor detecte el puerto 8080 de LA MÁQUINA HOST
-ENV BACKEND_URL="http://host.docker.internal:8080"
-
-# Exponemos el puerto 4200 hacia afuera del contenedor
-EXPOSE 4200
-
-# Iniciamos el servidor de Node usando la ruta definida en tu package.json
-CMD ["node", "dist/Biblioteca/server/server.mjs"]
+# Ejecutar el servidor SSR de Angular
+CMD ["npm", "run", "serve:ssr:Biblioteca"]

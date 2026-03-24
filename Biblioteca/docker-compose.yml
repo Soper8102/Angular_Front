@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: angular-frontend
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - BACKEND_URL=http://host.docker.internal:8080
+    restart: unless-stopped
