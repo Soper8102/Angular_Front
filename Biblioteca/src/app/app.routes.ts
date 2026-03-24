@@ -26,7 +26,7 @@ const adminGuard = () => {
 };
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+  { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
